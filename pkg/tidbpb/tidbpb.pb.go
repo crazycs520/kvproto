@@ -40,7 +40,6 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Tidb service
 
 type TidbClient interface {
-	// SQL push down commands.
 	MppProcessor(ctx context.Context, in *mpp_processor.Request, opts ...grpc.CallOption) (*mpp_processor.Response, error)
 }
 
@@ -64,7 +63,6 @@ func (c *tidbClient) MppProcessor(ctx context.Context, in *mpp_processor.Request
 // Server API for Tidb service
 
 type TidbServer interface {
-	// SQL push down commands.
 	MppProcessor(context.Context, *mpp_processor.Request) (*mpp_processor.Response, error)
 }
 
@@ -103,9 +101,9 @@ var _Tidb_serviceDesc = grpc.ServiceDesc{
 	Metadata: "tidbpb.proto",
 }
 
-func init() { proto.RegisterFile("tidbpb.proto", fileDescriptor_tidbpb_878ea6404f5cec9a) }
+func init() { proto.RegisterFile("tidbpb.proto", fileDescriptor_tidbpb_b0183f38d95d747d) }
 
-var fileDescriptor_tidbpb_878ea6404f5cec9a = []byte{
+var fileDescriptor_tidbpb_b0183f38d95d747d = []byte{
 	// 165 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x29, 0xc9, 0x4c, 0x49,
 	0x2a, 0x48, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x83, 0xf0, 0xa4, 0x84, 0x73, 0x0b,
