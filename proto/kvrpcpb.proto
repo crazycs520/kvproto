@@ -684,9 +684,9 @@ message Context {
     // Any additional serialized information about the request.
     bytes resource_group_tag = 18;
     // SQL digest about the request.
-    bytes sql_digest = 19;
+    fixed64 sql_digest = 19;
     // Plan digest about the request.
-    bytes plan_digest = 20;
+    fixed64 plan_digest = 20;
 }
 
 message LockInfo {
