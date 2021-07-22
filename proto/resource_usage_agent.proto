@@ -29,6 +29,7 @@ message CPUTimeRecord {
     // The value can be greater than 1000ms if the requests are running parallelly. 
     repeated uint32 record_list_cpu_time_ms = 3;
 
+    repeated uint64 record_list_scan_rows = 4;
 }
 
 message EmptyResponse {}
