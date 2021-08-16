@@ -33,18 +33,18 @@ type CPUTimeRecord struct {
 	// UNIX timestamp in second.
 	RecordListTimestampSec []uint64 `protobuf:"varint,2,rep,packed,name=record_list_timestamp_sec,json=recordListTimestampSec" json:"record_list_timestamp_sec,omitempty"`
 	// The value can be greater than 1000ms if the requests are running parallelly.
-	RecordListCpuTimeMs  []uint32 `protobuf:"varint,3,rep,packed,name=record_list_cpu_time_ms,json=recordListCpuTimeMs" json:"record_list_cpu_time_ms,omitempty"`
-	RecordListScanRows   []uint64 `protobuf:"varint,4,rep,packed,name=record_list_scan_rows,json=recordListScanRows" json:"record_list_scan_rows,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	RecordListCpuTimeMs  []uint32    `protobuf:"varint,3,rep,packed,name=record_list_cpu_time_ms,json=recordListCpuTimeMs" json:"record_list_cpu_time_ms,omitempty"`
+	ReadKeys             []*ReadKeys `protobuf:"bytes,4,rep,name=read_keys,json=readKeys" json:"read_keys,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
 func (m *CPUTimeRecord) Reset()         { *m = CPUTimeRecord{} }
 func (m *CPUTimeRecord) String() string { return proto.CompactTextString(m) }
 func (*CPUTimeRecord) ProtoMessage()    {}
 func (*CPUTimeRecord) Descriptor() ([]byte, []int) {
-	return fileDescriptor_resource_usage_agent_9193562f1798a3b8, []int{0}
+	return fileDescriptor_resource_usage_agent_c342993b3c629e77, []int{0}
 }
 func (m *CPUTimeRecord) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -94,9 +94,64 @@ func (m *CPUTimeRecord) GetRecordListCpuTimeMs() []uint32 {
 	return nil
 }
 
-func (m *CPUTimeRecord) GetRecordListScanRows() []uint64 {
+func (m *CPUTimeRecord) GetReadKeys() []*ReadKeys {
 	if m != nil {
-		return m.RecordListScanRows
+		return m.ReadKeys
+	}
+	return nil
+}
+
+type ReadKeys struct {
+	KeyLabel             int32    `protobuf:"varint,1,opt,name=key_label,json=keyLabel,proto3" json:"key_label,omitempty"`
+	RecordListReadKeys   []uint64 `protobuf:"varint,2,rep,packed,name=record_list_read_keys,json=recordListReadKeys" json:"record_list_read_keys,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadKeys) Reset()         { *m = ReadKeys{} }
+func (m *ReadKeys) String() string { return proto.CompactTextString(m) }
+func (*ReadKeys) ProtoMessage()    {}
+func (*ReadKeys) Descriptor() ([]byte, []int) {
+	return fileDescriptor_resource_usage_agent_c342993b3c629e77, []int{1}
+}
+func (m *ReadKeys) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ReadKeys) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ReadKeys.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *ReadKeys) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadKeys.Merge(dst, src)
+}
+func (m *ReadKeys) XXX_Size() int {
+	return m.Size()
+}
+func (m *ReadKeys) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadKeys.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadKeys proto.InternalMessageInfo
+
+func (m *ReadKeys) GetKeyLabel() int32 {
+	if m != nil {
+		return m.KeyLabel
+	}
+	return 0
+}
+
+func (m *ReadKeys) GetRecordListReadKeys() []uint64 {
+	if m != nil {
+		return m.RecordListReadKeys
 	}
 	return nil
 }
@@ -111,7 +166,7 @@ func (m *EmptyResponse) Reset()         { *m = EmptyResponse{} }
 func (m *EmptyResponse) String() string { return proto.CompactTextString(m) }
 func (*EmptyResponse) ProtoMessage()    {}
 func (*EmptyResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_resource_usage_agent_9193562f1798a3b8, []int{1}
+	return fileDescriptor_resource_usage_agent_c342993b3c629e77, []int{2}
 }
 func (m *EmptyResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -142,6 +197,7 @@ var xxx_messageInfo_EmptyResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*CPUTimeRecord)(nil), "resource_usage_agent.CPUTimeRecord")
+	proto.RegisterType((*ReadKeys)(nil), "resource_usage_agent.ReadKeys")
 	proto.RegisterType((*EmptyResponse)(nil), "resource_usage_agent.EmptyResponse")
 }
 
@@ -310,10 +366,48 @@ func (m *CPUTimeRecord) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintResourceUsageAgent(dAtA, i, uint64(j3))
 		i += copy(dAtA[i:], dAtA4[:j3])
 	}
-	if len(m.RecordListScanRows) > 0 {
-		dAtA6 := make([]byte, len(m.RecordListScanRows)*10)
+	if len(m.ReadKeys) > 0 {
+		for _, msg := range m.ReadKeys {
+			dAtA[i] = 0x22
+			i++
+			i = encodeVarintResourceUsageAgent(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *ReadKeys) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ReadKeys) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.KeyLabel != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintResourceUsageAgent(dAtA, i, uint64(m.KeyLabel))
+	}
+	if len(m.RecordListReadKeys) > 0 {
+		dAtA6 := make([]byte, len(m.RecordListReadKeys)*10)
 		var j5 int
-		for _, num := range m.RecordListScanRows {
+		for _, num := range m.RecordListReadKeys {
 			for num >= 1<<7 {
 				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
@@ -322,7 +416,7 @@ func (m *CPUTimeRecord) MarshalTo(dAtA []byte) (int, error) {
 			dAtA6[j5] = uint8(num)
 			j5++
 		}
-		dAtA[i] = 0x22
+		dAtA[i] = 0x12
 		i++
 		i = encodeVarintResourceUsageAgent(dAtA, i, uint64(j5))
 		i += copy(dAtA[i:], dAtA6[:j5])
@@ -384,9 +478,27 @@ func (m *CPUTimeRecord) Size() (n int) {
 		}
 		n += 1 + sovResourceUsageAgent(uint64(l)) + l
 	}
-	if len(m.RecordListScanRows) > 0 {
+	if len(m.ReadKeys) > 0 {
+		for _, e := range m.ReadKeys {
+			l = e.Size()
+			n += 1 + l + sovResourceUsageAgent(uint64(l))
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *ReadKeys) Size() (n int) {
+	var l int
+	_ = l
+	if m.KeyLabel != 0 {
+		n += 1 + sovResourceUsageAgent(uint64(m.KeyLabel))
+	}
+	if len(m.RecordListReadKeys) > 0 {
 		l = 0
-		for _, e := range m.RecordListScanRows {
+		for _, e := range m.RecordListReadKeys {
 			l += sovResourceUsageAgent(uint64(e))
 		}
 		n += 1 + sovResourceUsageAgent(uint64(l)) + l
@@ -604,6 +716,107 @@ func (m *CPUTimeRecord) Unmarshal(dAtA []byte) error {
 				return fmt.Errorf("proto: wrong wireType = %d for field RecordListCpuTimeMs", wireType)
 			}
 		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReadKeys", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowResourceUsageAgent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthResourceUsageAgent
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReadKeys = append(m.ReadKeys, &ReadKeys{})
+			if err := m.ReadKeys[len(m.ReadKeys)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipResourceUsageAgent(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthResourceUsageAgent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ReadKeys) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowResourceUsageAgent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ReadKeys: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ReadKeys: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field KeyLabel", wireType)
+			}
+			m.KeyLabel = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowResourceUsageAgent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.KeyLabel |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType == 0 {
 				var v uint64
 				for shift := uint(0); ; shift += 7 {
@@ -620,7 +833,7 @@ func (m *CPUTimeRecord) Unmarshal(dAtA []byte) error {
 						break
 					}
 				}
-				m.RecordListScanRows = append(m.RecordListScanRows, v)
+				m.RecordListReadKeys = append(m.RecordListReadKeys, v)
 			} else if wireType == 2 {
 				var packedLen int
 				for shift := uint(0); ; shift += 7 {
@@ -660,10 +873,10 @@ func (m *CPUTimeRecord) Unmarshal(dAtA []byte) error {
 							break
 						}
 					}
-					m.RecordListScanRows = append(m.RecordListScanRows, v)
+					m.RecordListReadKeys = append(m.RecordListReadKeys, v)
 				}
 			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field RecordListScanRows", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RecordListReadKeys", wireType)
 			}
 		default:
 			iNdEx = preIndex
@@ -844,30 +1057,33 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("resource_usage_agent.proto", fileDescriptor_resource_usage_agent_9193562f1798a3b8)
+	proto.RegisterFile("resource_usage_agent.proto", fileDescriptor_resource_usage_agent_c342993b3c629e77)
 }
 
-var fileDescriptor_resource_usage_agent_9193562f1798a3b8 = []byte{
-	// 331 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0xcf, 0x4a, 0x2b, 0x31,
-	0x14, 0xc6, 0x9b, 0xdb, 0x72, 0xb9, 0x84, 0x3b, 0xb4, 0xe4, 0xf6, 0xea, 0x38, 0x8b, 0xa1, 0x54,
-	0x90, 0x59, 0xc8, 0x88, 0x7f, 0x36, 0x2e, 0xb5, 0x88, 0x1b, 0x05, 0x49, 0xdb, 0xa5, 0x84, 0x18,
-	0x43, 0x18, 0xea, 0x4c, 0x42, 0x4e, 0xa6, 0xc5, 0x37, 0xf1, 0x11, 0x7c, 0x14, 0x97, 0x2e, 0x5d,
-	0x6a, 0x7d, 0x11, 0x99, 0xb4, 0xb5, 0x2d, 0xd4, 0xd5, 0x1c, 0xe6, 0xfb, 0x7e, 0x39, 0xe4, 0x17,
-	0x1c, 0x59, 0x09, 0xba, 0xb4, 0x42, 0xb2, 0x12, 0xb8, 0x92, 0x8c, 0x2b, 0x59, 0xb8, 0xd4, 0x58,
-	0xed, 0x34, 0x69, 0x6f, 0xca, 0xa2, 0xb6, 0xd2, 0x4a, 0xfb, 0xc2, 0x41, 0x35, 0xcd, 0xba, 0x51,
-	0xd3, 0x96, 0xe0, 0xfc, 0x38, 0xfb, 0xd1, 0xfd, 0x40, 0x38, 0xe8, 0xdd, 0x0c, 0x07, 0x59, 0x2e,
-	0xa9, 0x14, 0xda, 0xde, 0x93, 0x7d, 0x4c, 0xbe, 0x0f, 0x54, 0x56, 0x97, 0x86, 0x39, 0xae, 0x42,
-	0xd4, 0x41, 0xc9, 0x5f, 0xda, 0x5a, 0x24, 0x97, 0x55, 0x30, 0xe0, 0x8a, 0x9c, 0xe2, 0x1d, 0xeb,
-	0x39, 0xf6, 0x90, 0x81, 0x63, 0x2e, 0xcb, 0x25, 0x38, 0x9e, 0x1b, 0x06, 0x52, 0x84, 0xbf, 0x3a,
-	0xf5, 0xa4, 0x41, 0xb7, 0x66, 0x85, 0xab, 0x0c, 0xdc, 0x60, 0x11, 0xf7, 0xa5, 0x20, 0x27, 0x78,
-	0x7b, 0x15, 0x15, 0xa6, 0xf4, 0x38, 0xcb, 0x21, 0xac, 0x77, 0xea, 0x49, 0x40, 0xff, 0x2d, 0xc1,
-	0x9e, 0x29, 0x2b, 0xf6, 0x1a, 0xc8, 0x21, 0xfe, 0xbf, 0x4a, 0x81, 0xe0, 0x05, 0xb3, 0x7a, 0x02,
-	0x61, 0xc3, 0x2f, 0x23, 0x4b, 0xa6, 0x2f, 0x78, 0x41, 0xf5, 0x04, 0xba, 0x4d, 0x1c, 0x5c, 0xe4,
-	0xc6, 0x3d, 0x52, 0x09, 0x46, 0x17, 0x20, 0x8f, 0x00, 0x13, 0x3a, 0xbf, 0xc8, 0xb0, 0x52, 0x76,
-	0x56, 0x19, 0x23, 0xb7, 0x38, 0xa0, 0xd2, 0x68, 0xeb, 0xe6, 0x3e, 0xc8, 0x6e, 0xba, 0xd1, 0xfa,
-	0x9a, 0xae, 0xe8, 0x87, 0xd2, 0xda, 0xc2, 0x6e, 0x2d, 0x41, 0xe7, 0x7b, 0x6f, 0xcf, 0x7f, 0xd0,
-	0xcb, 0x34, 0x46, 0xaf, 0xd3, 0x18, 0xbd, 0x4f, 0x63, 0xf4, 0xf4, 0x19, 0xd7, 0x70, 0x4b, 0x5b,
-	0x95, 0xba, 0x6c, 0x34, 0x4e, 0x47, 0x63, 0xff, 0x22, 0x77, 0xbf, 0xfd, 0xe7, 0xf8, 0x2b, 0x00,
-	0x00, 0xff, 0xff, 0x6b, 0xf6, 0xe5, 0x31, 0xf3, 0x01, 0x00, 0x00,
+var fileDescriptor_resource_usage_agent_c342993b3c629e77 = []byte{
+	// 378 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x51, 0xc1, 0xca, 0xd3, 0x40,
+	0x10, 0xfe, 0xd7, 0x54, 0x49, 0x57, 0x43, 0xcb, 0x5a, 0x35, 0x46, 0x08, 0x21, 0x82, 0xe4, 0x20,
+	0x11, 0xab, 0x17, 0xf1, 0xa4, 0x45, 0x3c, 0x58, 0x41, 0xd6, 0xf6, 0x22, 0xc8, 0xb2, 0x4d, 0x87,
+	0x25, 0xa4, 0xe9, 0x2e, 0xbb, 0x9b, 0x42, 0xde, 0xc4, 0x47, 0xf0, 0x51, 0x3c, 0x7a, 0xf4, 0x28,
+	0xf5, 0xe8, 0x4b, 0x48, 0x92, 0xc6, 0xb6, 0xd0, 0xff, 0xb4, 0xb3, 0xf3, 0x7d, 0xdf, 0xcc, 0x37,
+	0x33, 0x38, 0xd0, 0x60, 0x64, 0xa5, 0x33, 0x60, 0x95, 0xe1, 0x02, 0x18, 0x17, 0xb0, 0xb5, 0xa9,
+	0xd2, 0xd2, 0x4a, 0x32, 0xb9, 0x84, 0x05, 0x13, 0x21, 0x85, 0x6c, 0x09, 0xcf, 0x9a, 0xa8, 0xe3,
+	0x06, 0x23, 0x5d, 0x19, 0xdb, 0x86, 0x5d, 0x22, 0xfe, 0x8b, 0xb0, 0x37, 0xfb, 0xb4, 0x5c, 0xe4,
+	0x25, 0x50, 0xc8, 0xa4, 0x5e, 0x93, 0xa7, 0x98, 0xfc, 0x2f, 0x28, 0xb4, 0xac, 0x14, 0xb3, 0x5c,
+	0xf8, 0x28, 0x42, 0xc9, 0x1d, 0x3a, 0xee, 0x91, 0xf7, 0x0d, 0xb0, 0xe0, 0x82, 0xbc, 0xc2, 0x0f,
+	0x75, 0xab, 0x63, 0x9b, 0xdc, 0x58, 0x66, 0xf3, 0x12, 0x8c, 0xe5, 0xa5, 0x62, 0x06, 0x32, 0xff,
+	0x46, 0xe4, 0x24, 0x03, 0x7a, 0xbf, 0x23, 0xcc, 0x73, 0x63, 0x17, 0x3d, 0xfc, 0x19, 0x32, 0xf2,
+	0x12, 0x3f, 0x38, 0x95, 0x66, 0xaa, 0x6a, 0xe5, 0xac, 0x34, 0xbe, 0x13, 0x39, 0x89, 0x47, 0xef,
+	0x1e, 0x85, 0x33, 0x55, 0x35, 0xda, 0x8f, 0x86, 0xbc, 0xc6, 0x43, 0x0d, 0x7c, 0xcd, 0x0a, 0xa8,
+	0x8d, 0x3f, 0x88, 0x9c, 0xe4, 0xf6, 0x34, 0x4c, 0x2f, 0x6e, 0x87, 0x02, 0x5f, 0x7f, 0x80, 0xda,
+	0x50, 0x57, 0x1f, 0xa2, 0xf8, 0x0b, 0x76, 0xfb, 0x2c, 0x79, 0x84, 0x87, 0x05, 0xd4, 0x6c, 0xc3,
+	0x57, 0xb0, 0x69, 0xc7, 0xbb, 0x49, 0xdd, 0x02, 0xea, 0x79, 0xf3, 0x27, 0xcf, 0xf1, 0xbd, 0x53,
+	0x6f, 0xc7, 0x8e, 0xdd, 0x48, 0xe4, 0xe8, 0xac, 0xaf, 0x17, 0x8f, 0xb0, 0xf7, 0xae, 0x54, 0xb6,
+	0xa6, 0x60, 0x94, 0xdc, 0x1a, 0x98, 0x1a, 0x4c, 0xe8, 0xc1, 0xd7, 0xb2, 0xb1, 0xf5, 0xa6, 0x71,
+	0x45, 0xbe, 0x62, 0x8f, 0x82, 0x92, 0xda, 0x1e, 0xb6, 0x4e, 0x1e, 0x5f, 0x76, 0x7f, 0x76, 0x94,
+	0xe0, 0x1a, 0xd2, 0x59, 0xc3, 0xf8, 0x2a, 0x41, 0x6f, 0x9f, 0xfc, 0xfa, 0xee, 0xa2, 0x1f, 0xfb,
+	0x10, 0xfd, 0xdc, 0x87, 0xe8, 0xf7, 0x3e, 0x44, 0xdf, 0xfe, 0x84, 0x57, 0x78, 0x2c, 0xb5, 0x48,
+	0x6d, 0x5e, 0xec, 0xd2, 0x62, 0xd7, 0xde, 0x7d, 0x75, 0xab, 0x7d, 0x5e, 0xfc, 0x0b, 0x00, 0x00,
+	0xff, 0xff, 0x53, 0xad, 0x8d, 0xa7, 0x59, 0x02, 0x00, 0x00,
 }

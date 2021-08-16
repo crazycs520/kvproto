@@ -691,6 +691,10 @@ message Context {
 
     // Indicates the request is a retry request and the same request may have been sent before.
     bool is_retry_request = 20;
+
+    // Use to label the handling kv type of the request.
+    // This is for TiKV resource_metering to collect execution information by the key label.
+    int32 key_label = 21;
 }
 
 message LockInfo {

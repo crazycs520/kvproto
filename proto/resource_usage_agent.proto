@@ -29,7 +29,13 @@ message CPUTimeRecord {
     // The value can be greater than 1000ms if the requests are running parallelly. 
     repeated uint32 record_list_cpu_time_ms = 3;
 
-    repeated uint64 record_list_scan_rows = 4;
+    repeated ReadKeys read_keys = 4;
+}
+
+message ReadKeys {
+    int32 key_label = 1;
+
+    repeated uint64 record_list_read_keys = 2;
 }
 
 message EmptyResponse {}
