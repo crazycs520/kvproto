@@ -1081,9 +1081,13 @@ message PrimaryMismatch {
 }
 
 enum StaleReadOption {
+    // Disable indicates this is not a stale-read request.
     Disable = 0;
+    // Enable indicates this is a stale-read request.
     Enable = 1;
-    EnableAndInRetry = 2;
+    // Fallback indicates this is a stale-read request, but it failed the first time,
+    // then retry and fallback to leader read or follower read or something else.
+    Fallback= 2;
 }
 
 enum CommandPri {
